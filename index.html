@@ -6,6 +6,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MediaLoader Demo</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Early parser initialization for above-the-fold images -->
+    <script>
+        // Immediately parse all media-loader images as the browser encounters them
+        (function () {
+            // Check if image is in viewport (optimized for parsing speed)
+            function isInViewport(img) {
+                try {
+                    const rect = img.getBoundingClientRect();
+                    const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                    return (rect.bottom > -150 && rect.top < windowHeight + 150);
+                } catch (e) {
+                    return true; // Default to loading during early parse phase
+                }
+            }
+
+            // Create a MutationObserver to watch for img[is="media-loader"] elements during parsing
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === 'childList') {
+                        mutation.addedNodes.forEach(function (node) {
+                            if (node.nodeType === 1) { // Element node
+                                if (node.tagName === 'IMG' && node.getAttribute('is') === 'media-loader') {
+                                    if (isInViewport(node) && node.dataset.src) {
+                                        // Early load for visible images
+                                        node.src = node.dataset.src;
+                                        if (node.dataset.srcset) node.srcset = node.dataset.srcset;
+                                        node.classList.add('loading');
+                                    }
+                                }
+
+                                // Also check children
+                                if (node.querySelectorAll) {
+                                    const images = node.querySelectorAll('img[is="media-loader"]');
+                                    images.forEach(function (img) {
+                                        if (isInViewport(img) && img.dataset.src) {
+                                            img.src = img.dataset.src;
+                                            if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+                                            img.classList.add('loading');
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Start observing as soon as possible
+            observer.observe(document.documentElement, { childList: true, subtree: true });
+
+            // Clean up after full script loads
+            window.addEventListener('load', function () {
+                observer.disconnect();
+            });
+        })();
+    </script>
+    <script src="media-loader.js" defer></script>
 </head>
 
 <body>
@@ -39,7 +96,6 @@
         <h2>Dynamic Management</h2>
 
         <div class="controls">
-            <button onclick="addImage()">➕ Add Image</button>
             <button onclick="changeImage()">🔄 Change Image</button>
             <button onclick="reloadImage()">🔁 Reload Image</button>
         </div>
@@ -91,32 +147,8 @@
         </div>
     </div>
 
-    <script src="media-loader.js"></script>
-
     <script>
         let imageCounter = 100;
-
-        function addImage() {
-            const container = document.getElementById('dynamic-container');
-            const div = document.createElement('div');
-            div.className = 'media';
-
-            const img = document.createElement('img');
-            img.setAttribute('is', 'media-loader');
-            img.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='150'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999'%3ENew ${imageCounter}%3C/text%3E%3C/svg%3E`;
-            img.setAttribute('data-src', `https://picsum.photos/250/150?random=${imageCounter}`);
-            img.alt = `Dynamic image ${imageCounter}`;
-
-            div.appendChild(img);
-            container.appendChild(div);
-
-            if (window.initMediaLoader) {
-                window.initMediaLoader(img);
-            }
-
-            updateInfo(`Added image ${imageCounter}`);
-            imageCounter++;
-        }
 
         function changeImage() {
             const img = document.getElementById('dynamic-image');
@@ -148,6 +180,11 @@
 
         function updateInfo(message) {
             document.getElementById('dynamic-info').textContent = message;
+        }
+
+        // Initialize all media loaders as soon as script loads
+        if (window.initAllMediaLoaders) {
+            initAllMediaLoaders();
         }
     </script>
 </body>

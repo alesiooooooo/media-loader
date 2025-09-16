@@ -6,20 +6,23 @@
   margin-bottom: 20px;
 }
 
-img[is="media-loader"], img[data-lazy] {
+img[is='media-loader'],
+img[data-lazy] {
   width: 100%;
   height: auto;
   display: block;
   transition: all 0.3s ease;
 }
 
-img[is="media-loader"].loading, img[data-lazy].loading {
+img[is='media-loader'].loading,
+img[data-lazy].loading {
   opacity: 0.7;
   filter: blur(2px);
   transform: scale(1.02);
 }
 
-img[is="media-loader"].loaded, img[data-lazy].loaded {
+img[is='media-loader'].loaded,
+img[data-lazy].loaded {
   opacity: 1;
   filter: none;
   transform: scale(1);
@@ -114,7 +117,7 @@ button:hover {
   body {
     padding: 10px;
   }
-  
+
   .grid {
     grid-template-columns: 1fr;
   }
