@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediaLoader Demo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1>MediaLoader Demo</h1>
+
+    <div class="demo-section">
+        <h2>Basic Examples</h2>
+
+        <div class="image-info">
+            <strong>Basic usage:</strong> Image with data-src for lazy loading
+        </div>
+        <div class="media">
+            <img is="media-loader"
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23cccccc'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23666666' font-family='Arial'%3ELoading...%3C/text%3E%3C/svg%3E"
+                data-src="https://picsum.photos/400/200?random=1" alt="Lazy loaded image example">
+        </div>
+
+        <div class="image-info">
+            <strong>With srcset:</strong> Responsive images for different resolutions
+        </div>
+        <div class="media">
+            <img is="media-loader"
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='150'%3E%3Crect width='100%25' height='100%25' fill='%23dddddd'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23666666' font-family='Arial'%3ESmall%3C/text%3E%3C/svg%3E"
+                data-src="https://picsum.photos/400/200?random=2"
+                data-srcset="https://picsum.photos/400/200?random=2 400w, https://picsum.photos/800/400?random=2 800w"
+                sizes="(max-width: 400px) 100vw, 400px" alt="Responsive lazy loaded image">
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Dynamic Management</h2>
+
+        <div class="controls">
+            <button onclick="addImage()">➕ Add Image</button>
+            <button onclick="changeImage()">🔄 Change Image</button>
+            <button onclick="reloadImage()">🔁 Reload Image</button>
+        </div>
+
+        <div class="image-info" id="dynamic-info">
+            Click buttons above to demonstrate dynamic capabilities
+        </div>
+
+        <div class="media">
+            <img id="dynamic-image" is="media-loader"
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23e8f4f8'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23333' font-family='Arial'%3EDynamic Image%3C/text%3E%3C/svg%3E"
+                data-src="https://picsum.photos/400/200?random=10" alt="Dynamic image">
+        </div>
+
+        <div id="dynamic-container" class="grid"></div>
+    </div>
+
+    <div class="spacer">
+        Scroll down to test lazy loading
+    </div>
+
+    <div class="demo-section">
+        <h2>Lazy Loading</h2>
+
+        <div class="grid">
+            <div class="media">
+                <img is="media-loader"
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23ddd'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999'%3EImage 3%3C/text%3E%3C/svg%3E"
+                    data-src="https://picsum.photos/300/200?random=3" alt="Lazy image 3">
+            </div>
+
+            <div class="media">
+                <img is="media-loader"
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23ddd'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999'%3EImage 4%3C/text%3E%3C/svg%3E"
+                    data-src="https://picsum.photos/300/200?random=4" alt="Lazy image 4">
+            </div>
+
+            <div class="media">
+                <img is="media-loader"
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23ddd'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999'%3EImage 5%3C/text%3E%3C/svg%3E"
+                    data-src="https://picsum.photos/300/200?random=5" alt="Lazy image 5">
+            </div>
+
+            <div class="media">
+                <img is="media-loader"
+                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23ddd'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999'%3EImage 6%3C/text%3E%3C/svg%3E"
+                    data-src="https://picsum.photos/300/200?random=6" alt="Lazy image 6">
+            </div>
+        </div>
+    </div>
+
+    <script src="media-loader.js"></script>
+
+    <script>
+        let imageCounter = 100;
+
+        function addImage() {
+            const container = document.getElementById('dynamic-container');
+            const div = document.createElement('div');
+            div.className = 'media';
+
+            const img = document.createElement('img');
+            img.setAttribute('is', 'media-loader');
+            img.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='150'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23999'%3ENew ${imageCounter}%3C/text%3E%3C/svg%3E`;
+            img.setAttribute('data-src', `https://picsum.photos/250/150?random=${imageCounter}`);
+            img.alt = `Dynamic image ${imageCounter}`;
+
+            div.appendChild(img);
+            container.appendChild(div);
+
+            if (window.initMediaLoader) {
+                window.initMediaLoader(img);
+            }
+
+            updateInfo(`Added image ${imageCounter}`);
+            imageCounter++;
+        }
+
+        function changeImage() {
+            const img = document.getElementById('dynamic-image');
+            const newRandom = Math.floor(Math.random() * 1000);
+
+            if (img.updateSrc) {
+                img.updateSrc(`https://picsum.photos/400/200?random=${newRandom}`);
+                updateInfo(`Image changed to random=${newRandom}`);
+            } else {
+                img.setAttribute('data-src', `https://picsum.photos/400/200?random=${newRandom}`);
+                img.classList.remove('loaded', 'error');
+                img._activate();
+                updateInfo(`Image changed (fallback) to random=${newRandom}`);
+            }
+        }
+
+        function reloadImage() {
+            const img = document.getElementById('dynamic-image');
+
+            if (img.reload) {
+                img.reload();
+                updateInfo('Image reloaded');
+            } else {
+                img.classList.remove('loaded', 'error');
+                img._activate();
+                updateInfo('Image reloaded (fallback)');
+            }
+        }
+
+        function updateInfo(message) {
+            document.getElementById('dynamic-info').textContent = message;
+        }
+    </script>
+</body>
+
+</html>
